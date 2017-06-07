@@ -22,13 +22,14 @@ def Test():
     EdgeList.append([0, 2])
     VarList['u' + str(0) + str(2)] = 4
     VarList['x' + str(0) + str(2)] = 0
-    VarList['c' + str(0) + str(2)] = 80
+    VarList['c' + str(0) + str(2)] = 4
 
 
     EdgeList.append([0, 3])
     VarList['u' + str(0) + str(3)] = 2
     VarList['x' + str(0) + str(3)] = 0
     VarList['c' + str(0) + str(3)] = 0
+
 
 
     EdgeList.append([2, 3])
@@ -46,43 +47,43 @@ def Test():
     VarList['x' + str(1) + str(4)] = 0
     VarList['c' + str(1) + str(4)] = 100
 
+
     EdgeList.append([3, 4])
     VarList['u' + str(3) + str(4)] = 7
     VarList['x' + str(3) + str(4)] = 0
     VarList['c' + str(3) + str(4)] = 10
 
-    VarList = ek.Compute_Flow_EdmondsKarp(5,0,4,EdgeList,VarList,6)
+    VarList = ek.Compute_Flow_EdmondsKarp(5,0,4,EdgeList,VarList,8)
     for Edge in EdgeList:
         print 'Initial Flow in ',Edge[0],', ',Edge[1],'is : ',VarList['x'+str(Edge[0])+str(Edge[1])]
 
     [E1, Residual_Network] =  ek.Compute_Residual_Network(5, EdgeList, VarList)
     Neg_Path = bl.Bellman_Ford(E1,Residual_Network,5)
     count = 0
-    print Neg_Path[1]
-    while Neg_Path[0] == True:
+    while Neg_Path[1] == True:
             print 'Count: ',count
-            MinCap = MAX
-            for Edge in Neg_Path[1]:
-                if (MinCap < Residual_Network['u'+str(Edge[0]) + str(Edge[1])]):
-                    MinCap =  Residual_Network['u'+str(Edge[0]) + str(Edge[1])]
-            print 'Minimum Capacity', MinCap
-            if MinCap != MAX:
-                for Edge in Neg_Path[1]:
-                    [a,b] = [Edge[0],Edge[1]]
+
+            for Edge in Neg_Path[0]:
+                if (MinCost < Residual_Network['u'+str(Edge[0]) + str(Edge[1])]):
+                    MinCost =  Residual_Network['u'+str(Edge[0]) + str(Edge[1])]
+            print 'Minimum Capacity', MinCost
+            if MinCost != MAX:
+                for b in range(len(Neg_Path[0])):
+                    a = Neg_Path[0][b]
                     if [a,b] in EdgeList:
-                        VarList['x' + str(a) + str(b)] = Residual_Network['x' + str(a) + str(b)] + MinCap;
+                        VarList['x' + str(a) + str(b)] = Residual_Network['x' + str(a) + str(b)] + MinCost;
                     if ([b, a] in E1) and ([b,a] not in EdgeList):
-                        VarList['x' + str(a) + str(b)] = Residual_Network['x' + str(a) + str(b)] - MinCap;
+                        VarList['x' + str(a) + str(b)] = Residual_Network['x' + str(a) + str(b)] - MinCost;
 
             for Edge in EdgeList:
                 print 'Flow in ', Edge[0], ', ', Edge[1], 'is : ', VarList['x' + str(Edge[0]) + str(Edge[1])]
 
             [E1, Residual_Network] = ek.Compute_Residual_Network(5,EdgeList,VarList)
             Neg_Path = bl.Bellman_Ford(E1, Residual_Network, 5)
-            print Neg_Path[1]
+            print Neg_Path[0]
             count = count + 1
 
     for Edge in EdgeList:
-        print ('Flow  in Edges: ',Edge[0],Edge[1],'is: ',VarList['x'+str(Edge[0])+str(Edge[1])])
+        print 'Flow  in Edges: ',Edge[0],Edge[1],'is: ',VarList['x'+str(Edge[0])+str(Edge[1])]
 
 Test()

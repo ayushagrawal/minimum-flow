@@ -1,10 +1,14 @@
 MAX = 9999999999999
 import numpy as np
 
-
+# Initialize a flow in the graph. Arguments are number of nodes, source node, sink node,
+# list of Edges, list of  variables of cost,capacity and flow for each variable and the flow required
 def Compute_Flow_EdmondsKarp(N,source,sink,EdgeList,VarList,f):
     Total_Flow = 0
+    # Generate a residual network with the edgelist and corresponding dictionary of variables
     [E_Residual,Residual_VarList] = Compute_Residual_Network(N,EdgeList,VarList)
+
+    # Find a path between the source and sink with non maximum flow.
     while Find_Augmenting_Path(N,source,sink,E_Residual,EdgeList,Residual_VarList) != None and Total_Flow < f:
         Path = Find_Augmenting_Path(N,source,sink,E_Residual,EdgeList,Residual_VarList)
         Min = MAX
@@ -17,8 +21,8 @@ def Compute_Flow_EdmondsKarp(N,source,sink,EdgeList,VarList,f):
         if Total_Flow + Min > f:
             Min = f-Total_Flow
 
-        # print 'Flow added in the Path',Path
-        # print 'Total Flow added: ', Min
+        print ('Flow added in the Path',Path)
+        print ('Total Flow added: ', Min)
 
         Total_Flow = Total_Flow + Min
         if Path != None:
@@ -33,7 +37,7 @@ def Compute_Flow_EdmondsKarp(N,source,sink,EdgeList,VarList,f):
 
 
 
-
+# Return an edge list and corresponding dictionary of the Residual graph.
 def Compute_Residual_Network(N,EdgeList,VarList):
     E1 = list()
     Residual_VarList = dict()
@@ -44,15 +48,10 @@ def Compute_Residual_Network(N,EdgeList,VarList):
         E1.append([a,b])
         Residual_VarList['u' + str(a) + str(b)] = VarList['u' + str(a) + str(b)] - VarList['x' + str(a) + str(b)]
         Residual_VarList['c' + str(a) + str(b)] = VarList['c' + str(a) + str(b)]
-        if Residual_VarList['u' + str(a) + str(b)] <= 0:
-            E1.remove([a, b])
 
         E1.append([b,a])
         Residual_VarList['u' + str(b) + str(a)] = VarList['x' + str(a) + str(b)]
         Residual_VarList['c' + str(b) + str(a)] = -VarList['c' + str(a) + str(b)]
-        if Residual_VarList['u' + str(b) + str(a)] <= 0:
-            E1.remove([b, a])
-
 
 
     return [E1,Residual_VarList]
@@ -95,7 +94,7 @@ def Find_Augmenting_Path(Nodes,source,sink,E_Residual,EdgeList,VarList):
     if Path[0] == source:
         return Path
     else:
-        # print 'No augmenting Path'
+        print ('No augmenting Path')
         return None
 #
 
@@ -154,6 +153,6 @@ def Test():
     # print P
     VarList = Compute_Flow_EdmondsKarp(5,0,4,EdgeList,VarList,8)
     for Edge in EdgeList:
-        print 'Flow in ',Edge[0],', ',Edge[1],'is : ',VarList['x'+str(Edge[0])+str(Edge[1])]
+        print ('Flow in ',Edge[0],', ',Edge[1],'is : ',VarList['x'+str(Edge[0])+str(Edge[1])])
 
-# Test()
+Test()
